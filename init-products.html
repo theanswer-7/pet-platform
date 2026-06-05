@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初始化商品数据</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        .success {
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>初始化商品数据</h1>
+        <p>点击下面的按钮初始化商品数据，解决前端商品显示问题。</p>
+        
+        <button onclick="initProducts()">初始化商品数据</button>
+        <button onclick="addAllProducts()">添加所有缺失的商品</button>
+        <button onclick="checkProducts()">检查商品数据</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function initProducts() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '正在初始化商品数据...';
+            
+            try {
+                const response = await fetch('/api/init-products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `成功: ${data.message}\n商品数量: ${data.count}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `失败: ${data.message}\n错误: ${data.error || '未知错误'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `请求失败: ${error.message}`;
+            }
+        }
+        
+        async function addAllProducts() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '正在添加所有缺失的商品...';
+            
+            try {
+                const response = await fetch('/api/add-all-products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `成功: ${data.message}\n商品数量: ${data.count || '未知'}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `失败: ${data.message}\n错误: ${data.error || '未知错误'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `请求失败: ${error.message}`;
+            }
+        }
+        
+        async function checkProducts() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '正在检查商品数据...';
+            
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `成功: 获取到 ${data.count} 条商品数据\n\n`;
+                    
+                    if (data.data.length > 0) {
+                        resultDiv.textContent += '前5个商品信息:\n';
+                        data.data.slice(0, 5).forEach((product, index) => {
+                            resultDiv.textContent += `${index+1}. ID: ${product.id}, 名称: ${product.name}, 类别: ${product.category}, 状态: ${product.status}\n`;
+                        });
+                        
+                        // 检查前端需要的商品ID是否存在
+                        const neededIds = [3, 5, 8];
+                        const existingIds = data.data.map(p => p.id);
+                        const missingIds = neededIds.filter(id => !existingIds.includes(id));
+                        
+                        if (missingIds.length > 0) {
+                            resultDiv.textContent += `\n⚠️ 前端需要的商品ID缺失: ${missingIds.join(', ')}`;
+                        } else {
+                            resultDiv.textContent += `\n✅ 前端需要的商品ID都已存在`;
+                        }
+                    }
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `失败: ${data.message}\n错误: ${data.error || '未知错误'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `请求失败: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

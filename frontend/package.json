@@ -1,0 +1,24 @@
+{
+    "name": "pet-platform-frontend",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "dev": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "start": "vue-cli-service serve"
+    },
+    "dependencies": {
+        "axios": "^0.27.2",
+        "date-fns": "^4.1.0",
+        "element-plus": "^2.3.0",
+        "vue": "^3.2.45",
+        "vue-router": "^4.1.6",
+        "pinia": "^2.0.28",
+        "vuex": "^4.1.0"
+    },
+    "devDependencies": {
+        "@vue/cli-service": "^5.0.8",
+        "@vitejs/plugin-vue": "^4.0.0"
+    }
+}

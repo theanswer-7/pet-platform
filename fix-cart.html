@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复购物车表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>购物车表修复工具</h1>
+        <p>点击下面的按钮来修复购物车表结构，添加缺失的字段。</p>
+        <button id="fixButton">修复购物车表</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('fixButton').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '正在修复购物车表...';
+            resultDiv.className = '';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/fix-cart-table');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.textContent = JSON.stringify(data, null, 2);
+                    resultDiv.className = 'success';
+                } else {
+                    resultDiv.textContent = '修复失败: ' + data.message;
+                    resultDiv.className = 'error';
+                }
+            } catch (error) {
+                resultDiv.textContent = '请求失败: ' + error.message;
+                resultDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>
